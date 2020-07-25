@@ -1,2 +1,7 @@
+.idea/
 *.class
+.g8/
+project/
+target/
+*backup.pdf
 *.log

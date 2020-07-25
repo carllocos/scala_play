@@ -1,0 +1,24 @@
+@(posts: List[Post])
+
+@for(post <- posts) {
+<div id="post@post.id" data-post-id="@post.id" class="d-flex flex-row justify-content-between mx-auto postContainer">
+    <div class="align-self-center" >
+        <div>
+            <small class="text-success post-thumbs-up-text">+@post.likes</small>
+            <i data-post-id="@post.id" class="far fa-thumbs-up post-thumbs-up"></i>
+        </div>
+        <div>
+            <small class="text-danger post-thumbs-down-text">-@post.dislikes</small>
+            <i data-post-id="@post.id" class="far fa-thumbs-down post-thumbs-down"></i>
+        </div>
+    </div>
+    <div class="col-sm list-group-item list-group-item-action border-top-0 border-left-0 border-right-0">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">@post.title</h5>
+            <small>Added on @post.dateToString() at @post.timeToString()</small>
+        </div>
+        <p class="mb-1">@post.shortContent()</p>
+        <a href="@controllers.routes.PostsController.postDetails(post.id)">Continue Reading</a>
+    </div>
+</div>
+}

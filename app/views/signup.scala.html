@@ -1,0 +1,61 @@
+@import forms.SignUpForm.SignUpData
+@import views.html.b4
+
+
+@(signupForm: Form[SignUpData])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
+
+
+
+@errorMessage = @{
+if(signupForm.hasGlobalErrors){
+signupForm.globalErrors.head.message
+}
+else{
+""
+}
+
+}
+
+
+@main("Signup", request.session.get("user")) {
+
+@request.flash.get("success")
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+            <div class="card card-signin my-5">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Register Credentials</h5>
+
+
+                    @if(signupForm.hasGlobalErrors) {
+                    @b4.vertical.form(routes.UsersController.validateSignUpForm()) { implicit vfc =>
+                    @helper.CSRF.formField
+                    @b4.text( signupForm("username"), '_error -> errorMessage, 'placeholder -> "username")
+                    @b4.password( signupForm("password"),'_error -> errorMessage, 'placeholder -> "Password", '_help -> "Min. 6 chars. At least one digit, small and capital letter required" )
+                    @b4.password( signupForm("confirm_password"),'_error -> errorMessage, 'placeholder -> "Confirm Password" )
+
+                    @b4.submit('class -> "btn btn-dark"){ Submit }
+                    }
+                    }else{
+                    @b4.vertical.form(routes.UsersController.validateSignUpForm()) { implicit vfc =>
+                    @helper.CSRF.formField
+                    @b4.text( signupForm("username"), 'placeholder -> "username" )
+                    @b4.password( signupForm("password"), 'placeholder -> "Password", '_help -> "Min. 6 chars. At least one digit, small and capital letter required")
+                    @b4.password( signupForm("confirm_password"), 'placeholder -> "Confirm Password" )
+                    @b4.submit('class -> "btn btn-dark"){ Submit }
+                    }
+                    }
+
+                </div>
+                <div>
+                    <small>Already member? <a href="@controllers.routes.UsersController.login">Login</a> </small>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+}

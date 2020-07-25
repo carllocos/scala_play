@@ -1,0 +1,58 @@
+@import forms.LoginForm.LoginData
+@import views.html.b4
+@(loginForm: Form[LoginData])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
+
+
+
+@errorMessage = @{
+if(loginForm.hasGlobalErrors){
+loginForm.globalErrors.head.message
+}
+else{
+""
+}
+
+}
+
+
+@main("Login", request.session.get("user")) {
+
+
+@request.flash.get("success")
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+            <div class="card card-signin my-5">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Login Credentials</h5>
+
+
+                    @if(loginForm.hasGlobalErrors) {
+                    @b4.vertical.form(routes.UsersController.validateLoginForm()) { implicit vfc =>
+                    @helper.CSRF.formField
+                    @b4.text( loginForm("username"), '_error -> errorMessage, 'placeholder -> "username")
+                    @b4.password( loginForm("password"),'_error -> errorMessage, 'placeholder -> "Password" )
+
+                    @b4.submit('class -> "btn btn-dark"){ Login }
+                    }
+                    }else{
+                    @b4.vertical.form(routes.UsersController.validateLoginForm()) { implicit vfc =>
+                    @helper.CSRF.formField
+                    @b4.text( loginForm("username"), 'placeholder -> "username" )
+                    @b4.password( loginForm("password"), 'placeholder -> "Password" )
+                    @b4.submit('class -> "btn btn-dark"){ Login }
+                    }
+                    }
+
+                </div>
+                <div>
+                    <small>Not a member? <a href="@controllers.routes.UsersController.signUp">Singup</a> </small>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+}

@@ -1,0 +1,60 @@
+@import forms.PostForm.PostData
+@import views.html.b4
+@(createForm: Form[PostData])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
+
+
+
+@errorMessage = @{
+if(createForm.hasGlobalErrors){
+createForm.globalErrors.head.message
+}
+else{
+""
+}
+"hey"
+}
+
+
+@main("New Post", request.session.get("user")) {
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+            <div class="card card-signin my-5">
+                <div class="card-body">
+                    <h5 class="card-title text-center">New Post</h5>
+
+
+                    @if(createForm.hasGlobalErrors) {
+                    @b4.vertical.form(routes.PostsController.validateCreatePostForm()) { implicit vfc =>
+                    @helper.CSRF.formField
+                    @b4.text( createForm("title"), 'placeholder -> "title" )
+                    @b4.textarea( createForm("content"), 'placeholder -> "share your thoughts", 'rows -> 10, 'cols -> 10)
+                    @b4.datetimeLocal( createForm("creationDateTime") )
+
+
+                    @b4.submit('class -> "btn btn-dark"){ create }
+                    }
+                    }else{
+                    @b4.vertical.form(routes.PostsController.validateCreatePostForm()) { implicit vfc =>
+                    @helper.CSRF.formField
+                    @b4.text( createForm("title"), 'placeholder -> "title" )
+                    @b4.textarea( createForm("content"), 'placeholder -> "share your thoughts", 'rows -> 10, 'cols -> 10)
+                    @b4.datetimeLocal( createForm("creationDateTime") )
+
+
+                    @b4.submit('class -> "btn btn-dark"){ create }
+
+
+                    }
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+}

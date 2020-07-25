@@ -1,0 +1,99 @@
+@(post:Post, comments: List[Comment])(implicit requestHeader: RequestHeader)
+
+
+@localScripts = {
+
+<script src="@routes.Assets.versioned("javascripts/postsOperations.js")" type="text/javascript"> </script>
+    <script>
+
+
+
+            $(document).ready(function(){
+
+                const csrf_token = $('input[name="csrfToken"]').attr('value')
+                setPostsConfig({
+                    voteUrl: '/posts/vote',
+                    isAuthenticated: @requestHeader.session.get("user").isDefined,
+                    commentUrl: "/posts/addComment/",
+                    csrf_token: csrf_token,
+                    username: "@requestHeader.session.get("user").getOrElse("")",
+                    alertContainer: "alertId",
+                    commentsContainer: "commentsContainer"
+                })
+
+                $.ajaxSetup({
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('Csrf-Token', csrf_token);
+                    }
+                });
+
+                $(".post-thumbs-up").click(function(){
+                    likePost($(this).data("post-id"))
+                })
+                $(".post-thumbs-down").click(function(){
+                    disLikePost($(this).data("post-id"))
+                })
+
+                $('#submitCommentForm').submit(function (evt) {
+                    evt.preventDefault();
+                    submitComment(@post.id, $("#contentComment").val())
+                })
+            })
+
+    </script>
+
+}
+
+
+@main(post.title, requestHeader.session.get("user"), localScripts) {
+
+<div id="alertId"></div>
+
+<div class="postsContainer mx-auto">
+
+    <div id="post@post.id" data-post-id="@post.id" class="d-flex flex-column justify-content-between mx-auto">
+        <div class="d-flex flex-row">
+            <div class="align-self-center">
+                <div>
+                    <small class="text-success post-thumbs-up-text">+@post.likes</small>
+                    <i data-post-id="@post.id" class="far fa-thumbs-up post-thumbs-up"></i>
+                </div>
+                <div>
+                    <small class="text-danger post-thumbs-down-text">-@post.dislikes</small>
+                    <i data-post-id="@post.id" class="far fa-thumbs-down post-thumbs-down"></i>
+                </div>
+            </div>
+            <div class="list-group-item border-0">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">@post.title</h5>
+                    <small>Added on @post.dateToString() at @post.timeToString()</small>
+                </div>
+                <p class="mb-1">@post.content</p>
+            </div>
+        </div>
+        <br>
+        <div id="commentsContainer" class="comments">
+            <div class="list-group-item border-0">
+                <form id="submitCommentForm">
+                    @helper.CSRF.formField
+                    <textarea id="contentComment" class="form-control" rows="2" placeholder="Share your thoughts"></textarea>
+                    <br/>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+
+            @for(c <- comments){
+            <div class="list-group-item border-0">
+                <div class="d-flex w-100 justify-content-between">
+                    <h7 class="mb-1">@c.writer</h7>
+                </div>
+                <p class="mb-1">@c.content</p>
+            </div>
+            }
+
+
+        </div>
+    </div>
+</div>
+
+}

@@ -1,0 +1,7 @@
+.postsContainer {
+    width: 70%
+}
+
+.fa-thumbs-up:hover, .fa-thumbs-down:hover{
+   cursor: pointer;
+}
